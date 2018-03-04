@@ -31,8 +31,20 @@ encoder = LabelEncoder()
 encoder.fit(Y)
 encoded_Y = encoder.transform(Y)
 
+
 # baseline model
 def create_baseline():
+    '''
+    Larger
+    60 inputs -> [60] -> 1 output
+
+    Larger
+    60 inputs -> [60 -> 30] -> 1 output
+
+    Smaller
+    60 inputs -> [30] -> 1 output
+    :return:
+    '''
     # create model
     model = Sequential()
     model.add(Dense(60, input_dim=60, kernel_initializer='normal', activation='relu'))
@@ -41,10 +53,12 @@ def create_baseline():
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
     return model
 
+
 # evaluate baseline model with standardized dataset
-estimators = []
-estimators.append(('standardize', StandardScaler()))
-estimators.append(('mlp', KerasClassifier(build_fn=create_baseline, epochs=100, batch_size=5, verbose=0)))
-pipeline = Pipeline(estimators)
+estimator = []
+estimator.append(('standardize', StandardScaler()))
+estimator.append(('mlp', KerasClassifier(build_fn=create_baseline, epochs=100, batch_size=5, verbose=0)))
+pipeline = Pipeline(steps=estimator)
 kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=seed)
-result = cross_val_score(pipeline, X, encoded_Y, cv=kfold)
+results = cross_val_score(pipeline, X, encoded_Y, cv=kfold)
+print("Smaller: %.2f%% (%.2f%%)" % (results.mean() * 100, results.std() * 100))

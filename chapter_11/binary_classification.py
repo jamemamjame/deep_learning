@@ -46,7 +46,7 @@ def create_baseline():
     model.add(Dense(units=1, kernel_initializer='normal', activation='sigmoid'))
 
     # compile model
-    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
 
     return model
 
